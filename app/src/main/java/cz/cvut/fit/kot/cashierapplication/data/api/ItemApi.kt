@@ -9,7 +9,7 @@ import retrofit2.http.Path
  */
 interface ItemApi {
     @GET("items/{id}")
-    suspend fun fetchById(@Path("id") id: String): ItemModel
+    suspend fun fetchById(@Path("id") id: Int): ItemModel
 
     @GET("items")
     suspend fun fetchAll(): List<ItemModel>

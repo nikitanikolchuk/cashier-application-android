@@ -14,7 +14,7 @@ class ItemRepository @Inject constructor(apiClient: ApiClient) {
     private val api: ItemApi? = apiClient.create(ItemApi::class.java)
 
     suspend fun fetchById(id: Int): ItemModel? =
-        api?.fetchById(id.toString())
+        api?.fetchById(id)
 
     suspend fun fetchAll(): List<ItemModel> =
         api?.fetchAll() ?: listOf()
