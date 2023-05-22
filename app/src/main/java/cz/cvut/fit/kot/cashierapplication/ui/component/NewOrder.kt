@@ -3,6 +3,7 @@ package cz.cvut.fit.kot.cashierapplication.ui.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Sell
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,6 +38,7 @@ import cz.cvut.fit.kot.cashierapplication.R
 import cz.cvut.fit.kot.cashierapplication.ui.state.ItemState
 import cz.cvut.fit.kot.cashierapplication.ui.theme.AppTheme
 import cz.cvut.fit.kot.cashierapplication.ui.viewmodel.NewOrderViewModel
+import kotlinx.coroutines.launch
 
 private val sampleItems = listOf(
     ItemState(0, "Name", 100),
@@ -142,12 +146,51 @@ private fun NewOrderItemList(
 }
 
 @Composable
-fun NewOrderMenu(newOrderViewModel: NewOrderViewModel = viewModel()) {
-    val items = remember { newOrderViewModel.items }
-    LaunchedEffect(null) {
-        newOrderViewModel.refreshItems()
+private fun NewOrderSaveButton(
+    price: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier.padding(vertical = 10.dp)
+    ) {
+        Text(
+            text = "${stringResource(R.string.total)}: $price ${stringResource(R.string.currency)}\n" +
+                    stringResource(R.string.save_order),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.labelLarge
+        )
     }
-    NewOrderItemList(items)
+}
+
+@Composable
+fun NewOrderMenu(
+    modifier: Modifier = Modifier,
+    newOrderViewModel: NewOrderViewModel = viewModel()
+) {
+    val items = remember { newOrderViewModel.items }
+    LaunchedEffect(null) { newOrderViewModel.refreshItems() }
+    val orderPrice = remember { newOrderViewModel.orderPrice }
+    val coroutineScope = rememberCoroutineScope()
+
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        NewOrderItemList(
+            items = items,
+            modifier = Modifier.weight(0.9f)
+        )
+        NewOrderSaveButton(
+            price = orderPrice.value,
+            onClick = {
+                coroutineScope.launch { newOrderViewModel.saveOrder() }
+            },
+            modifier = Modifier.weight(0.1f)
+        )
+    }
 }
 
 @Preview(showBackground = true)
@@ -175,5 +218,16 @@ private fun NewOrderItemPreview() {
 private fun NewOrderItemListPreview() {
     AppTheme {
         NewOrderItemList(sampleItems)
+    }
+}
+
+@Preview
+@Composable
+private fun NewOrderSaveButtonPreview() {
+    AppTheme {
+        NewOrderSaveButton(
+            price = 100,
+            onClick = {}
+        )
     }
 }

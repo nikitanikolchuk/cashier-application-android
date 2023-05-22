@@ -4,4 +4,6 @@
     <string name="item_image">item image</string>
     <string name="new_order">new order</string>
     <string name="order_history">order history</string>
+    <string name="save_order">Save order</string>
+    <string name="total">Total</string>
 </resources>
