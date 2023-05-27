@@ -19,6 +19,7 @@ fun MainScreen(
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.SpaceBetween,
@@ -33,7 +34,7 @@ fun MainScreen(
                 NewOrderMenu()
             }
             composable(NavRoutes.ORDER_HISTORY.toString()) {
-                //TODO
+                OrderHistoryMenu()
             }
         }
         MainNavBar(
