@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter
  */
 interface OrderApi {
     companion object {
-        val DATETIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+        val DATETIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
     }
 
     @GET("orders")
