@@ -33,7 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import cz.cvut.fit.kot.cashierapplication.R
 import cz.cvut.fit.kot.cashierapplication.ui.state.ItemState
 import cz.cvut.fit.kot.cashierapplication.ui.theme.AppTheme
@@ -167,7 +167,7 @@ private fun NewOrderSaveButton(
 @Composable
 fun NewOrderMenu(
     modifier: Modifier = Modifier,
-    newOrderViewModel: NewOrderViewModel = viewModel()
+    newOrderViewModel: NewOrderViewModel = hiltViewModel()
 ) {
     val items = remember { newOrderViewModel.items }
     LaunchedEffect(null) { newOrderViewModel.refreshItems() }
