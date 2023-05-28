@@ -1,6 +1,7 @@
 package cz.cvut.fit.kot.cashierapplication.ui.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import cz.cvut.fit.kot.cashierapplication.data.repository.OrderRepository
 import cz.cvut.fit.kot.cashierapplication.ui.state.OrderState
@@ -16,6 +17,7 @@ class OrderHistoryViewModel @Inject constructor(
     private val orderRepository: OrderRepository
 ) : ViewModel() {
     val orders = mutableStateListOf<OrderState>()
+    val chosenOrder = mutableStateOf<OrderState?>(null)
 
     suspend fun refreshOrders() {
         orders.clear()
@@ -25,5 +27,9 @@ class OrderHistoryViewModel @Inject constructor(
                 timeZoneId = ZoneId.systemDefault()
             )
         })
+    }
+
+    fun chooseOrder(order: OrderState?) {
+        chosenOrder.value = order
     }
 }
