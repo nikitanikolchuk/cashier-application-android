@@ -1,6 +1,6 @@
 package cz.cvut.fit.kot.cashierapplication.data.api
 
-import cz.cvut.fit.kot.cashierapplication.data.model.ItemModel
+import cz.cvut.fit.kot.cashierapplication.data.model.ItemResponseDto
 import retrofit2.http.GET
 import retrofit2.http.Path
 
@@ -9,8 +9,8 @@ import retrofit2.http.Path
  */
 interface ItemApi {
     @GET("items/{id}")
-    suspend fun fetchById(@Path("id") id: Int): ItemModel
+    suspend fun fetchById(@Path("id") id: Int): ItemResponseDto
 
     @GET("items")
-    suspend fun fetchAll(): List<ItemModel>
+    suspend fun fetchAll(): List<ItemResponseDto>
 }

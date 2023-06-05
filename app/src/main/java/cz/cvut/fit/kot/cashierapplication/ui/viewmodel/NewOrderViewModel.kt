@@ -32,9 +32,9 @@ class NewOrderViewModel @Inject constructor(
 
     suspend fun refreshItems() {
         items.clear()
-        items.addAll(itemRepository.fetchAll().mapIndexed { index, itemModel ->
+        items.addAll(itemRepository.fetchAll().mapIndexed { index, itemDto ->
             ItemState(
-                itemModel = itemModel,
+                itemDto = itemDto,
                 onCountIncrement = {
                     items[index] = items[index].incrementCount()
                     resetPrice()

@@ -1,6 +1,6 @@
 package cz.cvut.fit.kot.cashierapplication.ui.state
 
-import cz.cvut.fit.kot.cashierapplication.data.model.ItemModel
+import cz.cvut.fit.kot.cashierapplication.data.model.ItemResponseDto
 
 private const val MAX_COUNT = 99
 
@@ -17,21 +17,21 @@ data class ItemState(
     val categories: List<Int> = listOf()
 ) {
     constructor(
-        itemModel: ItemModel,
+        itemDto: ItemResponseDto,
         count: Int = 0,
         onCountIncrement: () -> Unit = {},
         onCountDecrement: () -> Unit = {},
         categories: List<Int> = listOf()
     ) : this(
-        id = itemModel.id,
-        name = itemModel.name,
-        price = itemModel.price,
+        id = itemDto.id,
+        name = itemDto.name,
+        price = itemDto.price,
         count = count,
         onCountIncrement = onCountIncrement,
         onCountDecrement = onCountDecrement,
         categories = categories
     )
-    
+
     fun incrementCount() = if (count < MAX_COUNT) copy(count = count + 1) else this
 
     fun decrementCount() = if (count > 0) copy(count = count - 1) else this
