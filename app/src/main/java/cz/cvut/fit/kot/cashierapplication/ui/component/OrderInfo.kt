@@ -91,39 +91,35 @@ fun OrderInfo(
     ) {
         Text(
             text = "Order #${order.id}",
-            modifier = Modifier
-                .weight(0.2f)
-                .padding(top = 64.dp),
+            modifier = Modifier.padding(top = 64.dp),
             fontSize = 48.sp,
             fontWeight = FontWeight.Bold
         )
         Text(
             text = order.localDateTime,
-            modifier = Modifier
-                .weight(0.1f)
-                .padding(top = 8.dp),
+            modifier = Modifier.padding(top = 16.dp, bottom = 24.dp),
         )
         OrderInfoDetailList(
             orderDetails = order.details,
             modifier = Modifier
-                .weight(0.5f)
+                .weight(1f)
                 .padding(horizontal = 24.dp)
         )
         Text(
             text = "${stringResource(R.string.total)}: ${order.price} ${stringResource(R.string.currency)}",
-            modifier = Modifier
-                .weight(0.1f)
-                .padding(vertical = 24.dp),
+            modifier = Modifier.padding(vertical = 24.dp),
             fontSize = 24.sp
         )
         Button(
             onClick = { onChooseOrder(null) },
             modifier = Modifier
-                .weight(0.1f)
                 .width(192.dp)
                 .padding(bottom = 24.dp)
         ) {
-            Text(stringResource(R.string.back))
+            Text(
+                text = stringResource(R.string.back),
+                fontSize = 20.sp
+            )
         }
     }
 }

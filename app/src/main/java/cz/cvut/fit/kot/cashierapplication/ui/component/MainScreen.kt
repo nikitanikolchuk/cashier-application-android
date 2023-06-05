@@ -69,7 +69,7 @@ fun MainScreen(
         NavHost(
             navController = navController,
             startDestination = NavRoutes.NEW_ORDER.toString(),
-            modifier = Modifier.weight(0.9f)
+            modifier = Modifier.weight(1f)
         ) {
             composable(NavRoutes.NEW_ORDER.toString()) { NewOrderMenu() }
             composable(NavRoutes.ORDER_HISTORY.toString()) { OrderHistoryMenu() }
@@ -80,8 +80,7 @@ fun MainScreen(
             },
             onOrderHistorySelected = {
                 navController.navigate(NavRoutes.ORDER_HISTORY.toString())
-            },
-            modifier = Modifier.weight(0.1f)
+            }
         )
     }
 }

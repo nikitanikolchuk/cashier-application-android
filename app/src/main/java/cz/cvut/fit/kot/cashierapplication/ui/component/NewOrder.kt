@@ -5,10 +5,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import cz.cvut.fit.kot.cashierapplication.R
 import cz.cvut.fit.kot.cashierapplication.ui.state.ItemState
@@ -40,10 +41,10 @@ import cz.cvut.fit.kot.cashierapplication.ui.theme.AppTheme
 import cz.cvut.fit.kot.cashierapplication.ui.viewmodel.NewOrderViewModel
 import kotlinx.coroutines.launch
 
-private val sampleItems = listOf(
-    ItemState(0, "Name", 100),
-    ItemState(0, "Name".repeat(10), 100),
-    ItemState(0, "Name", 100_000_000),
+private val sampleItem = ItemState(
+    id = 0,
+    name = "Name",
+    price = 100
 )
 
 @Composable
@@ -58,12 +59,8 @@ private fun ItemCounter(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val buttonModifier = Modifier
-            .weight(1f)
-            .aspectRatio(1f)
-        val iconModifier = Modifier
-            .fillMaxSize()
-            .border(1.dp, Color.Black)
+        val buttonModifier = Modifier.size(24.dp)
+        val iconModifier = Modifier.border(1.dp, Color.Black)
 
         IconButton(
             onClick = onCountDecrement,
@@ -77,7 +74,7 @@ private fun ItemCounter(
         }
         Text(
             text = count.toString(),
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.width(24.dp),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.labelLarge
         )
@@ -108,11 +105,11 @@ private fun NewOrderItem(
         Image(
             painter = rememberVectorPainter(Icons.Default.Sell),
             contentDescription = null,
-            modifier = Modifier.weight(0.2f)
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
         Text(
             text = itemState.name,
-            modifier = Modifier.weight(0.4f),
+            modifier = Modifier.weight(0.7f),
             textAlign = TextAlign.Center,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
@@ -120,7 +117,7 @@ private fun NewOrderItem(
         )
         Text(
             text = "${itemState.price} ${stringResource(R.string.currency)}",
-            modifier = Modifier.weight(0.2f),
+            modifier = Modifier.weight(0.3f),
             textAlign = TextAlign.Center,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
@@ -130,7 +127,6 @@ private fun NewOrderItem(
             count = itemState.count,
             onCountDecrement = itemState.onCountDecrement,
             onCountIncrement = itemState.onCountIncrement,
-            modifier = Modifier.weight(0.2f)
         )
     }
 }
@@ -142,25 +138,6 @@ private fun NewOrderItemList(
 ) {
     LazyColumn(modifier) {
         items(items) { item -> NewOrderItem(item) }
-    }
-}
-
-@Composable
-private fun NewOrderSaveButton(
-    price: Int,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Button(
-        onClick = onClick,
-        modifier = modifier.padding(vertical = 10.dp)
-    ) {
-        Text(
-            text = "${stringResource(R.string.total)}: $price ${stringResource(R.string.currency)}\n" +
-                    stringResource(R.string.save_order),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.labelLarge
-        )
     }
 }
 
@@ -181,15 +158,26 @@ fun NewOrderMenu(
     ) {
         NewOrderItemList(
             items = items,
-            modifier = Modifier.weight(0.9f)
+            modifier = Modifier.weight(1f)
         )
-        NewOrderSaveButton(
-            price = orderPrice.value,
+        Text(
+            text = "${stringResource(R.string.total)}: ${orderPrice.value} ${stringResource(R.string.currency)}",
+            modifier = Modifier.padding(vertical = 24.dp),
+            fontSize = 24.sp
+        )
+        Button(
             onClick = {
                 coroutineScope.launch { newOrderViewModel.saveOrder() }
             },
-            modifier = Modifier.weight(0.1f)
-        )
+            modifier = Modifier
+                .width(192.dp)
+                .padding(bottom = 24.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.save_order),
+                fontSize = 20.sp
+            )
+        }
     }
 }
 
@@ -209,7 +197,7 @@ private fun ItemCounterPreview() {
 @Composable
 private fun NewOrderItemPreview() {
     AppTheme {
-        NewOrderItem(sampleItems.first())
+        NewOrderItem(sampleItem)
     }
 }
 
@@ -217,17 +205,6 @@ private fun NewOrderItemPreview() {
 @Composable
 private fun NewOrderItemListPreview() {
     AppTheme {
-        NewOrderItemList(sampleItems)
-    }
-}
-
-@Preview
-@Composable
-private fun NewOrderSaveButtonPreview() {
-    AppTheme {
-        NewOrderSaveButton(
-            price = 100,
-            onClick = {}
-        )
+        NewOrderItemList(List(3) { sampleItem })
     }
 }

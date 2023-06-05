@@ -61,18 +61,18 @@ private fun OrderHistoryRow(
         Image(
             painter = rememberVectorPainter(Icons.Default.ShoppingCart),
             contentDescription = null,
-            modifier = Modifier.weight(0.2f)
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
         Text(
             text = "${orderState.price} ${stringResource(R.string.currency)}",
-            modifier = Modifier.weight(0.5f),
+            modifier = Modifier.weight(1f),
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
             style = MaterialTheme.typography.labelMedium
         )
         Text(
             text = orderState.localDateTime,
-            modifier = Modifier.weight(0.3f),
+            modifier = Modifier.padding(start = 8.dp),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.labelMedium
         )
