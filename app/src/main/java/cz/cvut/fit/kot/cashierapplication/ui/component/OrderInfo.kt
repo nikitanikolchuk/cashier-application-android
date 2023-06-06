@@ -22,19 +22,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.cvut.fit.kot.cashierapplication.R
-import cz.cvut.fit.kot.cashierapplication.data.model.OrderDetailResponseDto
 import cz.cvut.fit.kot.cashierapplication.ui.state.OrderDetailState
 import cz.cvut.fit.kot.cashierapplication.ui.state.OrderState
 import cz.cvut.fit.kot.cashierapplication.ui.theme.AppTheme
 
 private val buttonModifier = Modifier.width(160.dp)
 
-private val sampleOrderDetail = OrderDetailResponseDto(
-    orderId = 1,
-    itemId = 1,
+private val sampleOrderDetail = OrderDetailState(
     name = "item",
-    price = 100,
-    quantity = 1
+    quantity = 1,
+    totalPrice = 100
 )
 private val sampleOrder = OrderState(
     id = 1,
@@ -102,11 +99,8 @@ fun OrderInfoButton(
 
 @Composable
 fun OrderInfo(
-    price: Int,
-    details: List<OrderDetailState>,
+    order: OrderState,
     modifier: Modifier = Modifier,
-    id: Int? = null,
-    dateTime: String? = null,
     buttonRow: @Composable RowScope.() -> Unit
 ) {
     Column(
@@ -114,23 +108,23 @@ fun OrderInfo(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = id?.let { "Order #$id" } ?: stringResource(R.string.new_order),
+            text = order.id?.let { "Order #${order.id}" } ?: stringResource(R.string.new_order),
             modifier = Modifier.padding(top = 64.dp),
             fontSize = 48.sp,
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = dateTime ?: "",
+            text = order.localDateTime ?: "",
             modifier = Modifier.padding(top = 16.dp, bottom = 24.dp),
         )
         OrderInfoDetailList(
-            orderDetails = details,
+            orderDetails = order.details,
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 24.dp)
         )
         Text(
-            text = "${stringResource(R.string.total)}: $price ${stringResource(R.string.currency)}",
+            text = "${stringResource(R.string.total)}: ${order.price} ${stringResource(R.string.currency)}",
             modifier = Modifier.padding(vertical = 24.dp),
             fontSize = 24.sp
         )
@@ -149,7 +143,7 @@ fun OrderInfo(
 @Composable
 private fun OrderInfoDetailPreview() {
     AppTheme {
-        OrderInfoDetail(OrderDetailState(sampleOrderDetail))
+        OrderInfoDetail(sampleOrderDetail)
     }
 }
 
@@ -157,7 +151,7 @@ private fun OrderInfoDetailPreview() {
 @Composable
 private fun OrderInfoDetailListPreview() {
     AppTheme {
-        OrderInfoDetailList(sampleOrder.details.map(::OrderDetailState))
+        OrderInfoDetailList(sampleOrder.details)
     }
 }
 
@@ -165,12 +159,7 @@ private fun OrderInfoDetailListPreview() {
 @Composable
 private fun OrderInfoPreview() {
     AppTheme {
-        OrderInfo(
-            price = sampleOrder.price,
-            details = sampleOrder.details.map(::OrderDetailState),
-            id = sampleOrder.id,
-            dateTime = sampleOrder.localDateTime
-        ) {
+        OrderInfo(sampleOrder) {
             OrderInfoButton({}, stringResource(R.string.back))
         }
     }

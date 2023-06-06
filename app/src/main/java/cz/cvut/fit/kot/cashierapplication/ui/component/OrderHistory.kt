@@ -25,18 +25,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import cz.cvut.fit.kot.cashierapplication.R
-import cz.cvut.fit.kot.cashierapplication.data.model.OrderDetailResponseDto
 import cz.cvut.fit.kot.cashierapplication.ui.state.OrderDetailState
 import cz.cvut.fit.kot.cashierapplication.ui.state.OrderState
 import cz.cvut.fit.kot.cashierapplication.ui.theme.AppTheme
 import cz.cvut.fit.kot.cashierapplication.ui.viewmodel.OrderHistoryViewModel
 
-private val sampleOrderDetail = OrderDetailResponseDto(
-    orderId = 1,
-    itemId = 1,
+private val sampleOrderDetail = OrderDetailState(
     name = "item",
-    price = 100,
-    quantity = 1
+    quantity = 1,
+    totalPrice = 100
 )
 private val sampleOrder = OrderState(
     id = 1,
@@ -48,13 +45,13 @@ private val sampleOrder = OrderState(
 
 @Composable
 private fun OrderHistoryRow(
-    orderState: OrderState,
+    order: OrderState,
     onChooseOrder: (OrderState?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
-            .clickable { onChooseOrder(orderState) }
+            .clickable { onChooseOrder(order) }
             .fillMaxWidth()
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -65,14 +62,15 @@ private fun OrderHistoryRow(
             modifier = Modifier.padding(horizontal = 16.dp)
         )
         Text(
-            text = "${orderState.price} ${stringResource(R.string.currency)}",
+            text = "${order.price} ${stringResource(R.string.currency)}",
             modifier = Modifier.weight(1f),
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
             style = MaterialTheme.typography.labelMedium
         )
         Text(
-            text = orderState.localDateTime,
+            text = order.localDateTime
+                ?: throw IllegalArgumentException("Passed order with null dateTime"),
             modifier = Modifier.padding(start = 8.dp),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.labelMedium
@@ -94,23 +92,6 @@ private fun OrderHistoryList(
 }
 
 @Composable
-fun OrderHistoryInfo(
-    order: OrderState,
-    onClose: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    OrderInfo(
-        price = order.price,
-        details = order.details.map(::OrderDetailState),
-        modifier = modifier,
-        id = order.id,
-        dateTime = order.localDateTime
-    ) {
-        OrderInfoButton(onClose, stringResource(R.string.back))
-    }
-}
-
-@Composable
 fun OrderHistoryMenu(
     modifier: Modifier = Modifier,
     orderHistoryViewModel: OrderHistoryViewModel = hiltViewModel()
@@ -121,10 +102,12 @@ fun OrderHistoryMenu(
 
     Surface(modifier) {
         chosenOrder.value?.let {
-            OrderHistoryInfo(
-                order = it,
-                onClose = { orderHistoryViewModel.chooseOrder(null) }
-            )
+            OrderInfo(it) {
+                OrderInfoButton(
+                    onClick = { orderHistoryViewModel.chooseOrder(null) },
+                    text = stringResource(R.string.back)
+                )
+            }
         } ?: run {
             OrderHistoryList(orders, orderHistoryViewModel::chooseOrder)
         }
@@ -136,7 +119,7 @@ fun OrderHistoryMenu(
 private fun OrderHistoryRowPreview() {
     AppTheme {
         OrderHistoryRow(
-            orderState = sampleOrder,
+            order = sampleOrder,
             onChooseOrder = {}
         )
     }

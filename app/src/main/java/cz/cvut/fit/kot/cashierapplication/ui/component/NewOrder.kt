@@ -40,6 +40,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import cz.cvut.fit.kot.cashierapplication.R
 import cz.cvut.fit.kot.cashierapplication.ui.state.ItemState
 import cz.cvut.fit.kot.cashierapplication.ui.state.OrderDetailState
+import cz.cvut.fit.kot.cashierapplication.ui.state.OrderState
 import cz.cvut.fit.kot.cashierapplication.ui.theme.AppTheme
 import cz.cvut.fit.kot.cashierapplication.ui.viewmodel.NewOrderViewModel
 import kotlinx.coroutines.launch
@@ -180,24 +181,6 @@ private fun NewOrderMenu(
 }
 
 @Composable
-private fun NewOrderInfo(
-    price: Int,
-    details: List<OrderDetailState>,
-    onCancel: () -> Unit,
-    onConfirm: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    OrderInfo(
-        price = price,
-        details = details,
-        modifier = modifier
-    ) {
-        OrderInfoButton(onCancel, stringResource(R.string.cancel))
-        OrderInfoButton(onConfirm, stringResource(R.string.confirm))
-    }
-}
-
-@Composable
 fun NewOrder(
     modifier: Modifier = Modifier,
     newOrderViewModel: NewOrderViewModel = hiltViewModel()
@@ -210,15 +193,21 @@ fun NewOrder(
 
     Surface(modifier) {
         if (isOrderShown.value) {
-            NewOrderInfo(
-                price = orderPrice.value,
-                details = items.filter { it.count > 0 }.map(::OrderDetailState),
-                onCancel = { isOrderShown.value = false },
-                onConfirm = {
-                    coroutineScope.launch { newOrderViewModel.saveOrder() }
-                    isOrderShown.value = false
-                }
-            )
+            OrderInfo(
+                OrderState(items.filter { it.count > 0 }.map(::OrderDetailState))
+            ) {
+                OrderInfoButton(
+                    onClick = { isOrderShown.value = false },
+                    text = stringResource(R.string.cancel)
+                )
+                OrderInfoButton(
+                    onClick = {
+                        coroutineScope.launch { newOrderViewModel.saveOrder() }
+                        isOrderShown.value = false
+                    },
+                    text = stringResource(R.string.confirm)
+                )
+            }
         } else {
             NewOrderMenu(
                 items = items,

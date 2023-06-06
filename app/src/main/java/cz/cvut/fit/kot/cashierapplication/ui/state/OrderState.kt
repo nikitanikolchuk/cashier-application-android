@@ -1,7 +1,6 @@
 package cz.cvut.fit.kot.cashierapplication.ui.state
 
 import cz.cvut.fit.kot.cashierapplication.data.api.OrderApi
-import cz.cvut.fit.kot.cashierapplication.data.model.OrderDetailResponseDto
 import cz.cvut.fit.kot.cashierapplication.data.model.OrderResponseDto
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -9,14 +8,15 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 /**
- * Immutable class representing order state with data from API
+ * Immutable class representing order state.
+ * Can represent either data from API or an unfinished order.
  */
 data class OrderState(
-    val id: Int,
-    val localDateTime: String,
-    val employeeId: Int,
+    val id: Int?,
+    val localDateTime: String?,
+    val employeeId: Int?,
     val price: Int,
-    val details: List<OrderDetailResponseDto>
+    val details: List<OrderDetailState>
 ) {
     companion object {
         private val dateTimeFormatter: DateTimeFormatter =
@@ -40,6 +40,16 @@ data class OrderState(
         ).format(dateTimeFormatter),
         employeeId = orderDto.employeeId,
         price = orderDto.price,
-        details = orderDto.details
+        details = orderDto.details.map(::OrderDetailState)
+    )
+
+    constructor(
+        details: List<OrderDetailState>
+    ) : this(
+        id = null,
+        localDateTime = null,
+        employeeId = null,
+        price = details.sumOf(OrderDetailState::totalPrice),
+        details = details
     )
 }
