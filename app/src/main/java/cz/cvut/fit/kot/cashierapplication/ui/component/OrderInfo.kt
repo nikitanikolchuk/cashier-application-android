@@ -108,7 +108,8 @@ fun OrderInfo(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = order.id?.let { "Order #${order.id}" } ?: stringResource(R.string.new_order),
+            text = order.id?.let { "${stringResource(R.string.order)} #${order.id}" }
+                ?: stringResource(R.string.new_order),
             modifier = Modifier.padding(top = 64.dp),
             fontSize = 48.sp,
             fontWeight = FontWeight.Bold
