@@ -6,6 +6,7 @@ import cz.cvut.fit.kot.cashierapplication.data.model.OrderRequestDto
 import cz.cvut.fit.kot.cashierapplication.data.model.OrderResponseDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import retrofit2.http.Body
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,7 +17,7 @@ import javax.inject.Singleton
 class OrderRepository @Inject constructor(apiClient: ApiClient) {
     private val api: OrderApi? = apiClient.create(OrderApi::class.java)
 
-    suspend fun save(order: OrderRequestDto): Unit? = withContext(Dispatchers.IO) {
+    suspend fun save(@Body order: OrderRequestDto): Unit? = withContext(Dispatchers.IO) {
         api?.create(order)
     }
 
