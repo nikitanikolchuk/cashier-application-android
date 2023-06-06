@@ -39,7 +39,7 @@ private fun MainNavBar(
                 Icon(Icons.Default.Add, contentDescription = null)
             },
             label = {
-                Text(stringResource(R.string.new_order))
+                Text(stringResource(R.string.new_order).lowercase())
             }
         )
         NavigationBarItem(
@@ -71,7 +71,7 @@ fun MainScreen(
             startDestination = NavRoutes.NEW_ORDER.toString(),
             modifier = Modifier.weight(1f)
         ) {
-            composable(NavRoutes.NEW_ORDER.toString()) { NewOrderMenu() }
+            composable(NavRoutes.NEW_ORDER.toString()) { NewOrder() }
             composable(NavRoutes.ORDER_HISTORY.toString()) { OrderHistoryMenu() }
         }
         MainNavBar(

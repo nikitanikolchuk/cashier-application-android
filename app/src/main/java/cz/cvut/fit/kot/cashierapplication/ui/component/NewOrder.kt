@@ -19,9 +19,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -37,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import cz.cvut.fit.kot.cashierapplication.R
 import cz.cvut.fit.kot.cashierapplication.ui.state.ItemState
+import cz.cvut.fit.kot.cashierapplication.ui.state.OrderDetailState
 import cz.cvut.fit.kot.cashierapplication.ui.theme.AppTheme
 import cz.cvut.fit.kot.cashierapplication.ui.viewmodel.NewOrderViewModel
 import kotlinx.coroutines.launch
@@ -142,15 +145,12 @@ private fun NewOrderItemList(
 }
 
 @Composable
-fun NewOrderMenu(
-    modifier: Modifier = Modifier,
-    newOrderViewModel: NewOrderViewModel = hiltViewModel()
+private fun NewOrderMenu(
+    items: List<ItemState>,
+    orderPrice: Int,
+    onSaveOrder: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val items = remember { newOrderViewModel.items }
-    LaunchedEffect(null) { newOrderViewModel.refreshItems() }
-    val orderPrice = remember { newOrderViewModel.orderPrice }
-    val coroutineScope = rememberCoroutineScope()
-
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.SpaceBetween,
@@ -161,14 +161,12 @@ fun NewOrderMenu(
             modifier = Modifier.weight(1f)
         )
         Text(
-            text = "${stringResource(R.string.total)}: ${orderPrice.value} ${stringResource(R.string.currency)}",
+            text = "${stringResource(R.string.total)}: $orderPrice ${stringResource(R.string.currency)}",
             modifier = Modifier.padding(vertical = 24.dp),
             fontSize = 24.sp
         )
         Button(
-            onClick = {
-                coroutineScope.launch { newOrderViewModel.saveOrder() }
-            },
+            onClick = onSaveOrder,
             modifier = Modifier
                 .width(192.dp)
                 .padding(bottom = 24.dp)
@@ -176,6 +174,56 @@ fun NewOrderMenu(
             Text(
                 text = stringResource(R.string.save_order),
                 fontSize = 20.sp
+            )
+        }
+    }
+}
+
+@Composable
+private fun NewOrderInfo(
+    price: Int,
+    details: List<OrderDetailState>,
+    onCancel: () -> Unit,
+    onConfirm: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OrderInfo(
+        price = price,
+        details = details,
+        modifier = modifier
+    ) {
+        OrderInfoButton(onCancel, stringResource(R.string.cancel))
+        OrderInfoButton(onConfirm, stringResource(R.string.confirm))
+    }
+}
+
+@Composable
+fun NewOrder(
+    modifier: Modifier = Modifier,
+    newOrderViewModel: NewOrderViewModel = hiltViewModel()
+) {
+    val items = remember { newOrderViewModel.items }
+    LaunchedEffect(null) { newOrderViewModel.refreshItems() }
+    val orderPrice = remember { newOrderViewModel.orderPrice }
+    val isOrderShown = remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+
+    Surface(modifier) {
+        if (isOrderShown.value) {
+            NewOrderInfo(
+                price = orderPrice.value,
+                details = items.filter { it.count > 0 }.map(::OrderDetailState),
+                onCancel = { isOrderShown.value = false },
+                onConfirm = {
+                    coroutineScope.launch { newOrderViewModel.saveOrder() }
+                    isOrderShown.value = false
+                }
+            )
+        } else {
+            NewOrderMenu(
+                items = items,
+                orderPrice = orderPrice.value,
+                onSaveOrder = { isOrderShown.value = (orderPrice.value > 0) }
             )
         }
     }

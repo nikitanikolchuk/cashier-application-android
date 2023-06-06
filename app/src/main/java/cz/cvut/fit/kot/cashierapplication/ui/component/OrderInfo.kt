@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -22,8 +23,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cz.cvut.fit.kot.cashierapplication.R
 import cz.cvut.fit.kot.cashierapplication.data.model.OrderDetailResponseDto
+import cz.cvut.fit.kot.cashierapplication.ui.state.OrderDetailState
 import cz.cvut.fit.kot.cashierapplication.ui.state.OrderState
 import cz.cvut.fit.kot.cashierapplication.ui.theme.AppTheme
+
+private val buttonModifier = Modifier.width(160.dp)
 
 private val sampleOrderDetail = OrderDetailResponseDto(
     orderId = 1,
@@ -42,7 +46,7 @@ private val sampleOrder = OrderState(
 
 @Composable
 private fun OrderInfoDetail(
-    orderDetail: OrderDetailResponseDto,
+    orderDetail: OrderDetailState,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -58,7 +62,7 @@ private fun OrderInfoDetail(
             maxLines = 1
         )
         Text(
-            text = "${orderDetail.price * orderDetail.quantity} ${stringResource(R.string.currency)}",
+            text = "${orderDetail.totalPrice} ${stringResource(R.string.currency)}",
             modifier = Modifier.weight(0.3f),
             overflow = TextOverflow.Ellipsis,
             maxLines = 1
@@ -68,7 +72,7 @@ private fun OrderInfoDetail(
 
 @Composable
 private fun OrderInfoDetailList(
-    orderDetails: List<OrderDetailResponseDto>,
+    orderDetails: List<OrderDetailState>,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -80,46 +84,63 @@ private fun OrderInfoDetailList(
 }
 
 @Composable
-fun OrderInfo(
-    order: OrderState,
-    onChooseOrder: (OrderState?) -> Unit,
+fun OrderInfoButton(
+    onClick: () -> Unit,
+    text: String,
     modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier.then(buttonModifier)
+    ) {
+        Text(
+            text = text,
+            fontSize = 20.sp
+        )
+    }
+}
+
+@Composable
+fun OrderInfo(
+    price: Int,
+    details: List<OrderDetailState>,
+    modifier: Modifier = Modifier,
+    id: Int? = null,
+    dateTime: String? = null,
+    buttonRow: @Composable RowScope.() -> Unit
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Order #${order.id}",
+            text = id?.let { "Order #$id" } ?: stringResource(R.string.new_order),
             modifier = Modifier.padding(top = 64.dp),
             fontSize = 48.sp,
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = order.localDateTime,
+            text = dateTime ?: "",
             modifier = Modifier.padding(top = 16.dp, bottom = 24.dp),
         )
         OrderInfoDetailList(
-            orderDetails = order.details,
+            orderDetails = details,
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 24.dp)
         )
         Text(
-            text = "${stringResource(R.string.total)}: ${order.price} ${stringResource(R.string.currency)}",
+            text = "${stringResource(R.string.total)}: $price ${stringResource(R.string.currency)}",
             modifier = Modifier.padding(vertical = 24.dp),
             fontSize = 24.sp
         )
-        Button(
-            onClick = { onChooseOrder(null) },
+        Row(
             modifier = Modifier
-                .width(192.dp)
-                .padding(bottom = 24.dp)
+                .fillMaxWidth()
+                .padding(bottom = 24.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Text(
-                text = stringResource(R.string.back),
-                fontSize = 20.sp
-            )
+            buttonRow()
         }
     }
 }
@@ -128,7 +149,7 @@ fun OrderInfo(
 @Composable
 private fun OrderInfoDetailPreview() {
     AppTheme {
-        OrderInfoDetail(sampleOrderDetail)
+        OrderInfoDetail(OrderDetailState(sampleOrderDetail))
     }
 }
 
@@ -136,7 +157,7 @@ private fun OrderInfoDetailPreview() {
 @Composable
 private fun OrderInfoDetailListPreview() {
     AppTheme {
-        OrderInfoDetailList(sampleOrder.details)
+        OrderInfoDetailList(sampleOrder.details.map(::OrderDetailState))
     }
 }
 
@@ -145,8 +166,12 @@ private fun OrderInfoDetailListPreview() {
 private fun OrderInfoPreview() {
     AppTheme {
         OrderInfo(
-            order = sampleOrder,
-            onChooseOrder = {}
-        )
+            price = sampleOrder.price,
+            details = sampleOrder.details.map(::OrderDetailState),
+            id = sampleOrder.id,
+            dateTime = sampleOrder.localDateTime
+        ) {
+            OrderInfoButton({}, stringResource(R.string.back))
+        }
     }
 }

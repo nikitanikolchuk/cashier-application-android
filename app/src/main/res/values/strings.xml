@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">Cashier Application</string>
     <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
     <string name="currency">CZK</string>
-    <string name="item_image">item image</string>
-    <string name="new_order">new order</string>
+    <string name="new_order">New order</string>
     <string name="order_history">order history</string>
     <string name="save_order">Save order</string>
     <string name="total">Total</string>

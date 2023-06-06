@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import cz.cvut.fit.kot.cashierapplication.R
 import cz.cvut.fit.kot.cashierapplication.data.model.OrderDetailResponseDto
+import cz.cvut.fit.kot.cashierapplication.ui.state.OrderDetailState
 import cz.cvut.fit.kot.cashierapplication.ui.state.OrderState
 import cz.cvut.fit.kot.cashierapplication.ui.theme.AppTheme
 import cz.cvut.fit.kot.cashierapplication.ui.viewmodel.OrderHistoryViewModel
@@ -93,6 +94,23 @@ private fun OrderHistoryList(
 }
 
 @Composable
+fun OrderHistoryInfo(
+    order: OrderState,
+    onClose: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OrderInfo(
+        price = order.price,
+        details = order.details.map(::OrderDetailState),
+        modifier = modifier,
+        id = order.id,
+        dateTime = order.localDateTime
+    ) {
+        OrderInfoButton(onClose, stringResource(R.string.back))
+    }
+}
+
+@Composable
 fun OrderHistoryMenu(
     modifier: Modifier = Modifier,
     orderHistoryViewModel: OrderHistoryViewModel = hiltViewModel()
@@ -103,7 +121,10 @@ fun OrderHistoryMenu(
 
     Surface(modifier) {
         chosenOrder.value?.let {
-            OrderInfo(it, orderHistoryViewModel::chooseOrder)
+            OrderHistoryInfo(
+                order = it,
+                onClose = { orderHistoryViewModel.chooseOrder(null) }
+            )
         } ?: run {
             OrderHistoryList(orders, orderHistoryViewModel::chooseOrder)
         }
