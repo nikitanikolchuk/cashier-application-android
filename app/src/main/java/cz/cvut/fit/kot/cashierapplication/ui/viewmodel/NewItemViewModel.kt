@@ -15,14 +15,20 @@ class NewItemViewModel @Inject constructor(
     private val itemRepository: ItemRepository
 ) : ViewModel() {
     val itemName = mutableStateOf("")
-    val itemPrice = mutableStateOf(0)
+    val itemPrice = mutableStateOf("")
+
+    companion object {
+        const val NAME_MAX_LENGTH = 50
+        val PRICE_REGEX = "([1-9][0-9]{0,4})".toRegex()
+    }
 
     suspend fun saveItem() {
-        if (itemName.value == "" || itemPrice.value == 0)
-            return
+        if (itemName.value.length !in (1..NAME_MAX_LENGTH) ||
+            !itemPrice.value.matches(PRICE_REGEX)
+        ) return
 
         itemRepository.save(
-            ItemRequestDto(itemName.value, itemPrice.value)
+            ItemRequestDto(itemName.value, itemPrice.value.toInt())
         )
     }
 }

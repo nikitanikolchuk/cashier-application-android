@@ -4,8 +4,12 @@
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
     <string name="currency">CZK</string>
+    <string name="name">Name</string>
+    <string name="new_item">New item</string>
     <string name="new_order">New order</string>
     <string name="order_history">order history</string>
+    <string name="price">Price</string>
+    <string name="save_item">Save item</string>
     <string name="save_order">Save order</string>
     <string name="total">Total</string>
 </resources>
