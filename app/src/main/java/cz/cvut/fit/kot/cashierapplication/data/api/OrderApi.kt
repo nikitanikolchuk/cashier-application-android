@@ -16,9 +16,9 @@ interface OrderApi {
         val DATETIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
     }
 
-    @GET("orders")
-    suspend fun fetchAll(): List<OrderResponseDto>
-
     @POST("orders")
-    suspend fun saveOrder(@Body order: OrderRequestDto)
+    suspend fun create(@Body order: OrderRequestDto)
+
+    @GET("orders")
+    suspend fun readAll(): List<OrderResponseDto>
 }

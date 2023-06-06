@@ -15,11 +15,7 @@ import javax.inject.Singleton
 class ItemRepository @Inject constructor(apiClient: ApiClient) {
     private val api: ItemApi? = apiClient.create(ItemApi::class.java)
 
-    suspend fun fetchById(id: Int): ItemResponseDto? = withContext(Dispatchers.IO) {
-        api?.fetchById(id)
-    }
-
     suspend fun fetchAll(): List<ItemResponseDto> = withContext(Dispatchers.IO) {
-        api?.fetchAll() ?: listOf()
+        api?.readAll() ?: listOf()
     }
 }

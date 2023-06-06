@@ -57,7 +57,7 @@ class NewOrderViewModel @Inject constructor(
         if (orderPrice.value == 0)
             return
 
-        orderRepository.saveOrder(OrderRequestDto(
+        orderRepository.save(OrderRequestDto(
             employeeId = PLACEHOLDER_EMPLOYEE_ID,
             details = items.filter { it.count > 0 }.map { item ->
                 OrderDetailRequestDto(

@@ -16,11 +16,11 @@ import javax.inject.Singleton
 class OrderRepository @Inject constructor(apiClient: ApiClient) {
     private val api: OrderApi? = apiClient.create(OrderApi::class.java)
 
-    suspend fun fetchAll(): List<OrderResponseDto> = withContext(Dispatchers.IO) {
-        api?.fetchAll() ?: listOf()
+    suspend fun save(order: OrderRequestDto): Unit? = withContext(Dispatchers.IO) {
+        api?.create(order)
     }
 
-    suspend fun saveOrder(order: OrderRequestDto): Unit? = withContext(Dispatchers.IO) {
-        api?.saveOrder(order)
+    suspend fun fetchAll(): List<OrderResponseDto> = withContext(Dispatchers.IO) {
+        api?.readAll() ?: listOf()
     }
 }
